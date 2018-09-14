@@ -7,6 +7,7 @@ using Nuke.GitHub;
 using System;
 using System.IO.Compression;
 using System.Linq;
+using System.Threading.Tasks;
 using static Nuke.Common.ChangeLog.ChangelogTasks;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
@@ -82,6 +83,8 @@ class Build : NukeBuild
 
             var zipPath = OutputDirectory / "AzureFolderMigrator.zip";
             ZipFile.CreateFromDirectory(OutputDirectory, zipPath);
+
+            await Task.Delay(100); // To ensure the created archive is not locked
 
             var isStable = GitVersion.BranchName.Equals("master") || GitVersion.BranchName.Equals("origin/master");
 

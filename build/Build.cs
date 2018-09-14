@@ -33,11 +33,13 @@ class Build : NukeBuild
     [KeyVaultSecret] readonly string GitHubAuthenticationToken;
 
     string ChangeLogFile => RootDirectory / "CHANGELOG.md";
+    string ZipPath => RootDirectory / "AzureFolderMigrator.zip";
 
     Target Clean => _ => _
         .Executes(() =>
         {
             DeleteDirectories(GlobDirectories(SourceDirectory, "**/bin", "**/obj"));
+            DeleteFile(ZipPath);
             EnsureCleanDirectory(OutputDirectory);
         });
 
@@ -81,15 +83,12 @@ class Build : NukeBuild
 
             var repositoryInfo = GetGitHubRepositoryInfo(GitRepository);
 
-            var zipPath = OutputDirectory / "AzureFolderMigrator.zip";
-            ZipFile.CreateFromDirectory(OutputDirectory, zipPath);
-
-            await Task.Delay(100); // To ensure the created archive is not locked
+            ZipFile.CreateFromDirectory(OutputDirectory, ZipPath);
 
             var isStable = GitVersion.BranchName.Equals("master") || GitVersion.BranchName.Equals("origin/master");
 
             await PublishRelease(x => x
-                    .SetArtifactPaths(new string[] { zipPath })
+                    .SetArtifactPaths(new string[] { ZipPath })
                     .SetReleaseNotes(completeChangeLog)
                     .SetCommitSha(GitVersion.Sha)
                     .SetPrerelease(!isStable)

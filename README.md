@@ -1,7 +1,5 @@
 # AzureFolderMigrator
 
-[![Built with Nuke](http://nuke.build/rounded)](https://www.nuke.build)
-
 You can find all releases in the _Releases_ section of this GitHub repository.
 
 This small tool is an easy way to mirror a local folder to an Azure Blob Storage container. Call the tool via:
